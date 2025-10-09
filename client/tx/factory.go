@@ -124,6 +124,7 @@ func (f Factory) GasPrices() sdk.DecCoins                   { return f.gasPrices
 func (f Factory) AccountRetriever() client.AccountRetriever { return f.accountRetriever }
 func (f Factory) TimeoutHeight() uint64                     { return f.timeoutHeight }
 func (f Factory) FromName() string                          { return f.fromName }
+func (f Factory) TxConfig() client.TxConfig                 { return f.txConfig }
 
 // SimulateAndExecute returns the option to simulate and then execute the transaction
 // using the gas from the simulation results
