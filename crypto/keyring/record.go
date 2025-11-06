@@ -67,6 +67,16 @@ func NewMultiRecord(name string, pk cryptotypes.PubKey) (*Record, error) {
 	return newRecord(name, pk, recordMultiItem)
 }
 
+// NewOpenBaoRecord creates a new Record with OpenBao item
+func NewOpenBaoRecord(name string, pk cryptotypes.PubKey, vaultPath, keyName string) (*Record, error) {
+	recordOpenBao := &Record_OpenBao{
+		VaultPath: vaultPath,
+		KeyName:   keyName,
+	}
+	recordOpenBaoItem := &Record_Openbao{recordOpenBao}
+	return newRecord(name, pk, recordOpenBaoItem)
+}
+
 // GetPubKey fetches a public key of the record
 func (k *Record) GetPubKey() (cryptotypes.PubKey, error) {
 	pk, ok := k.PubKey.GetCachedValue().(cryptotypes.PubKey)
@@ -97,6 +107,8 @@ func (k Record) GetType() KeyType {
 		return TypeMulti
 	case k.GetOffline() != nil:
 		return TypeOffline
+	case k.GetOpenbao() != nil:
+		return TypeOpenBao
 	default:
 		panic("unrecognized record type")
 	}

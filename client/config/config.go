@@ -6,24 +6,29 @@ import (
 	"path/filepath"
 
 	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 )
 
 func DefaultConfig() *ClientConfig {
 	return &ClientConfig{
-		ChainID:        "",
-		KeyringBackend: "os",
-		Output:         "text",
-		Node:           "tcp://localhost:26657",
-		BroadcastMode:  "sync",
+		ChainID:          "",
+		KeyringBackend:   "os",
+		Output:           "text",
+		Node:             "tcp://localhost:26657",
+		BroadcastMode:    "sync",
+		OpenBaoAddr:      "",
+		OpenBaoTokenFile: "",
 	}
 }
 
 type ClientConfig struct {
-	ChainID        string `mapstructure:"chain-id" json:"chain-id"`
-	KeyringBackend string `mapstructure:"keyring-backend" json:"keyring-backend"`
-	Output         string `mapstructure:"output" json:"output"`
-	Node           string `mapstructure:"node" json:"node"`
-	BroadcastMode  string `mapstructure:"broadcast-mode" json:"broadcast-mode"`
+	ChainID          string `mapstructure:"chain-id" json:"chain-id"`
+	KeyringBackend   string `mapstructure:"keyring-backend" json:"keyring-backend"`
+	Output           string `mapstructure:"output" json:"output"`
+	Node             string `mapstructure:"node" json:"node"`
+	BroadcastMode    string `mapstructure:"broadcast-mode" json:"broadcast-mode"`
+	OpenBaoAddr      string `mapstructure:"openbao-addr" json:"openbao-addr"`
+	OpenBaoTokenFile string `mapstructure:"openbao-token-file" json:"openbao-token-file"`
 }
 
 func (c *ClientConfig) SetChainID(chainID string) {
@@ -95,6 +100,11 @@ func ReadFromClientConfig(ctx client.Context) (client.Context, error) {
 	ctx = ctx.WithOutputFormat(conf.Output).
 		WithChainID(conf.ChainID).
 		WithKeyringDir(ctx.HomeDir)
+
+	// Add OpenBao config to keyring options
+	if conf.OpenBaoAddr != "" || conf.OpenBaoTokenFile != "" {
+		ctx = ctx.WithKeyringOptions(keyring.WithOpenBaoConfig(conf.OpenBaoAddr, conf.OpenBaoTokenFile))
+	}
 
 	keyring, err := client.NewKeyringFromBackend(ctx, conf.KeyringBackend)
 	if err != nil {
