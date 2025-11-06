@@ -23,6 +23,7 @@ var (
 	fd_Record_ledger  protoreflect.FieldDescriptor
 	fd_Record_multi   protoreflect.FieldDescriptor
 	fd_Record_offline protoreflect.FieldDescriptor
+	fd_Record_openbao protoreflect.FieldDescriptor
 )
 
 func init() {
@@ -34,6 +35,7 @@ func init() {
 	fd_Record_ledger = md_Record.Fields().ByName("ledger")
 	fd_Record_multi = md_Record.Fields().ByName("multi")
 	fd_Record_offline = md_Record.Fields().ByName("offline")
+	fd_Record_openbao = md_Record.Fields().ByName("openbao")
 }
 
 var _ protoreflect.Message = (*fastReflection_Record)(nil)
@@ -139,6 +141,12 @@ func (x *fastReflection_Record) Range(f func(protoreflect.FieldDescriptor, proto
 			if !f(fd_Record_offline, value) {
 				return
 			}
+		case *Record_Openbao:
+			v := o.Openbao
+			value := protoreflect.ValueOfMessage(v.ProtoReflect())
+			if !f(fd_Record_openbao, value) {
+				return
+			}
 		}
 	}
 }
@@ -192,6 +200,14 @@ func (x *fastReflection_Record) Has(fd protoreflect.FieldDescriptor) bool {
 		} else {
 			return false
 		}
+	case "cosmos.crypto.keyring.v1.Record.openbao":
+		if x.Item == nil {
+			return false
+		} else if _, ok := x.Item.(*Record_Openbao); ok {
+			return true
+		} else {
+			return false
+		}
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.crypto.keyring.v1.Record"))
@@ -219,6 +235,8 @@ func (x *fastReflection_Record) Clear(fd protoreflect.FieldDescriptor) {
 	case "cosmos.crypto.keyring.v1.Record.multi":
 		x.Item = nil
 	case "cosmos.crypto.keyring.v1.Record.offline":
+		x.Item = nil
+	case "cosmos.crypto.keyring.v1.Record.openbao":
 		x.Item = nil
 	default:
 		if fd.IsExtension() {
@@ -274,6 +292,14 @@ func (x *fastReflection_Record) Get(descriptor protoreflect.FieldDescriptor) pro
 		} else {
 			return protoreflect.ValueOfMessage((*Record_Offline)(nil).ProtoReflect())
 		}
+	case "cosmos.crypto.keyring.v1.Record.openbao":
+		if x.Item == nil {
+			return protoreflect.ValueOfMessage((*Record_OpenBao)(nil).ProtoReflect())
+		} else if v, ok := x.Item.(*Record_Openbao); ok {
+			return protoreflect.ValueOfMessage(v.Openbao.ProtoReflect())
+		} else {
+			return protoreflect.ValueOfMessage((*Record_OpenBao)(nil).ProtoReflect())
+		}
 	default:
 		if descriptor.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.crypto.keyring.v1.Record"))
@@ -310,6 +336,9 @@ func (x *fastReflection_Record) Set(fd protoreflect.FieldDescriptor, value proto
 	case "cosmos.crypto.keyring.v1.Record.offline":
 		cv := value.Message().Interface().(*Record_Offline)
 		x.Item = &Record_Offline_{Offline: cv}
+	case "cosmos.crypto.keyring.v1.Record.openbao":
+		cv := value.Message().Interface().(*Record_OpenBao)
+		x.Item = &Record_Openbao{Openbao: cv}
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.crypto.keyring.v1.Record"))
@@ -399,6 +428,22 @@ func (x *fastReflection_Record) Mutable(fd protoreflect.FieldDescriptor) protore
 			x.Item = oneofValue
 			return protoreflect.ValueOfMessage(value.ProtoReflect())
 		}
+	case "cosmos.crypto.keyring.v1.Record.openbao":
+		if x.Item == nil {
+			value := &Record_OpenBao{}
+			oneofValue := &Record_Openbao{Openbao: value}
+			x.Item = oneofValue
+			return protoreflect.ValueOfMessage(value.ProtoReflect())
+		}
+		switch m := x.Item.(type) {
+		case *Record_Openbao:
+			return protoreflect.ValueOfMessage(m.Openbao.ProtoReflect())
+		default:
+			value := &Record_OpenBao{}
+			oneofValue := &Record_Openbao{Openbao: value}
+			x.Item = oneofValue
+			return protoreflect.ValueOfMessage(value.ProtoReflect())
+		}
 	case "cosmos.crypto.keyring.v1.Record.name":
 		panic(fmt.Errorf("field name of message cosmos.crypto.keyring.v1.Record is not mutable"))
 	default:
@@ -431,6 +476,9 @@ func (x *fastReflection_Record) NewField(fd protoreflect.FieldDescriptor) protor
 	case "cosmos.crypto.keyring.v1.Record.offline":
 		value := &Record_Offline{}
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
+	case "cosmos.crypto.keyring.v1.Record.openbao":
+		value := &Record_OpenBao{}
+		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.crypto.keyring.v1.Record"))
@@ -457,6 +505,8 @@ func (x *fastReflection_Record) WhichOneof(d protoreflect.OneofDescriptor) proto
 			return x.Descriptor().Fields().ByName("multi")
 		case *Record_Offline_:
 			return x.Descriptor().Fields().ByName("offline")
+		case *Record_Openbao:
+			return x.Descriptor().Fields().ByName("openbao")
 		}
 	default:
 		panic(fmt.Errorf("%s is not a oneof field in cosmos.crypto.keyring.v1.Record", d.FullName()))
@@ -547,6 +597,12 @@ func (x *fastReflection_Record) ProtoMethods() *protoiface.Methods {
 			}
 			l = options.Size(x.Offline)
 			n += 1 + l + runtime.Sov(uint64(l))
+		case *Record_Openbao:
+			if x == nil {
+				break
+			}
+			l = options.Size(x.Openbao)
+			n += 1 + l + runtime.Sov(uint64(l))
 		}
 		if x.unknownFields != nil {
 			n += len(x.unknownFields)
@@ -630,6 +686,19 @@ func (x *fastReflection_Record) ProtoMethods() *protoiface.Methods {
 			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
 			i--
 			dAtA[i] = 0x32
+		case *Record_Openbao:
+			encoded, err := options.Marshal(x.Openbao)
+			if err != nil {
+				return protoiface.MarshalOutput{
+					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+					Buf:               input.Buf,
+				}, err
+			}
+			i -= len(encoded)
+			copy(dAtA[i:], encoded)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
+			i--
+			dAtA[i] = 0x3a
 		}
 		if x.PubKey != nil {
 			encoded, err := options.Marshal(x.PubKey)
@@ -908,6 +977,41 @@ func (x *fastReflection_Record) ProtoMethods() *protoiface.Methods {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
 				}
 				x.Item = &Record_Offline_{v}
+				iNdEx = postIndex
+			case 7:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Openbao", wireType)
+				}
+				var msglen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					msglen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if msglen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + msglen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				v := &Record_OpenBao{}
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], v); err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				x.Item = &Record_Openbao{v}
 				iNdEx = postIndex
 			default:
 				iNdEx = preIndex
@@ -2526,6 +2630,490 @@ func (x *fastReflection_Record_Offline) ProtoMethods() *protoiface.Methods {
 	}
 }
 
+var (
+	md_Record_OpenBao            protoreflect.MessageDescriptor
+	fd_Record_OpenBao_vault_path protoreflect.FieldDescriptor
+	fd_Record_OpenBao_key_name   protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_cosmos_crypto_keyring_v1_record_proto_init()
+	md_Record_OpenBao = File_cosmos_crypto_keyring_v1_record_proto.Messages().ByName("Record").Messages().ByName("OpenBao")
+	fd_Record_OpenBao_vault_path = md_Record_OpenBao.Fields().ByName("vault_path")
+	fd_Record_OpenBao_key_name = md_Record_OpenBao.Fields().ByName("key_name")
+}
+
+var _ protoreflect.Message = (*fastReflection_Record_OpenBao)(nil)
+
+type fastReflection_Record_OpenBao Record_OpenBao
+
+func (x *Record_OpenBao) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_Record_OpenBao)(x)
+}
+
+func (x *Record_OpenBao) slowProtoReflect() protoreflect.Message {
+	mi := &file_cosmos_crypto_keyring_v1_record_proto_msgTypes[5]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_Record_OpenBao_messageType fastReflection_Record_OpenBao_messageType
+var _ protoreflect.MessageType = fastReflection_Record_OpenBao_messageType{}
+
+type fastReflection_Record_OpenBao_messageType struct{}
+
+func (x fastReflection_Record_OpenBao_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_Record_OpenBao)(nil)
+}
+func (x fastReflection_Record_OpenBao_messageType) New() protoreflect.Message {
+	return new(fastReflection_Record_OpenBao)
+}
+func (x fastReflection_Record_OpenBao_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_Record_OpenBao
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_Record_OpenBao) Descriptor() protoreflect.MessageDescriptor {
+	return md_Record_OpenBao
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_Record_OpenBao) Type() protoreflect.MessageType {
+	return _fastReflection_Record_OpenBao_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_Record_OpenBao) New() protoreflect.Message {
+	return new(fastReflection_Record_OpenBao)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_Record_OpenBao) Interface() protoreflect.ProtoMessage {
+	return (*Record_OpenBao)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_Record_OpenBao) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.VaultPath != "" {
+		value := protoreflect.ValueOfString(x.VaultPath)
+		if !f(fd_Record_OpenBao_vault_path, value) {
+			return
+		}
+	}
+	if x.KeyName != "" {
+		value := protoreflect.ValueOfString(x.KeyName)
+		if !f(fd_Record_OpenBao_key_name, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_Record_OpenBao) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "cosmos.crypto.keyring.v1.Record.OpenBao.vault_path":
+		return x.VaultPath != ""
+	case "cosmos.crypto.keyring.v1.Record.OpenBao.key_name":
+		return x.KeyName != ""
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.crypto.keyring.v1.Record.OpenBao"))
+		}
+		panic(fmt.Errorf("message cosmos.crypto.keyring.v1.Record.OpenBao does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_Record_OpenBao) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "cosmos.crypto.keyring.v1.Record.OpenBao.vault_path":
+		x.VaultPath = ""
+	case "cosmos.crypto.keyring.v1.Record.OpenBao.key_name":
+		x.KeyName = ""
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.crypto.keyring.v1.Record.OpenBao"))
+		}
+		panic(fmt.Errorf("message cosmos.crypto.keyring.v1.Record.OpenBao does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_Record_OpenBao) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "cosmos.crypto.keyring.v1.Record.OpenBao.vault_path":
+		value := x.VaultPath
+		return protoreflect.ValueOfString(value)
+	case "cosmos.crypto.keyring.v1.Record.OpenBao.key_name":
+		value := x.KeyName
+		return protoreflect.ValueOfString(value)
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.crypto.keyring.v1.Record.OpenBao"))
+		}
+		panic(fmt.Errorf("message cosmos.crypto.keyring.v1.Record.OpenBao does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_Record_OpenBao) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "cosmos.crypto.keyring.v1.Record.OpenBao.vault_path":
+		x.VaultPath = value.Interface().(string)
+	case "cosmos.crypto.keyring.v1.Record.OpenBao.key_name":
+		x.KeyName = value.Interface().(string)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.crypto.keyring.v1.Record.OpenBao"))
+		}
+		panic(fmt.Errorf("message cosmos.crypto.keyring.v1.Record.OpenBao does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_Record_OpenBao) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "cosmos.crypto.keyring.v1.Record.OpenBao.vault_path":
+		panic(fmt.Errorf("field vault_path of message cosmos.crypto.keyring.v1.Record.OpenBao is not mutable"))
+	case "cosmos.crypto.keyring.v1.Record.OpenBao.key_name":
+		panic(fmt.Errorf("field key_name of message cosmos.crypto.keyring.v1.Record.OpenBao is not mutable"))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.crypto.keyring.v1.Record.OpenBao"))
+		}
+		panic(fmt.Errorf("message cosmos.crypto.keyring.v1.Record.OpenBao does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_Record_OpenBao) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "cosmos.crypto.keyring.v1.Record.OpenBao.vault_path":
+		return protoreflect.ValueOfString("")
+	case "cosmos.crypto.keyring.v1.Record.OpenBao.key_name":
+		return protoreflect.ValueOfString("")
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.crypto.keyring.v1.Record.OpenBao"))
+		}
+		panic(fmt.Errorf("message cosmos.crypto.keyring.v1.Record.OpenBao does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_Record_OpenBao) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in cosmos.crypto.keyring.v1.Record.OpenBao", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_Record_OpenBao) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_Record_OpenBao) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_Record_OpenBao) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_Record_OpenBao) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*Record_OpenBao)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		l = len(x.VaultPath)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		l = len(x.KeyName)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*Record_OpenBao)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if len(x.KeyName) > 0 {
+			i -= len(x.KeyName)
+			copy(dAtA[i:], x.KeyName)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.KeyName)))
+			i--
+			dAtA[i] = 0x12
+		}
+		if len(x.VaultPath) > 0 {
+			i -= len(x.VaultPath)
+			copy(dAtA[i:], x.VaultPath)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.VaultPath)))
+			i--
+			dAtA[i] = 0xa
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*Record_OpenBao)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: Record_OpenBao: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: Record_OpenBao: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field VaultPath", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.VaultPath = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 2:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field KeyName", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.KeyName = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
 // Since: cosmos-sdk 0.46
 
 // Code generated by protoc-gen-go. DO NOT EDIT.
@@ -2559,6 +3147,7 @@ type Record struct {
 	//	*Record_Ledger_
 	//	*Record_Multi_
 	//	*Record_Offline_
+	//	*Record_Openbao
 	Item isRecord_Item `protobuf_oneof:"item"`
 }
 
@@ -2631,6 +3220,13 @@ func (x *Record) GetOffline() *Record_Offline {
 	return nil
 }
 
+func (x *Record) GetOpenbao() *Record_OpenBao {
+	if x, ok := x.GetItem().(*Record_Openbao); ok {
+		return x.Openbao
+	}
+	return nil
+}
+
 type isRecord_Item interface {
 	isRecord_Item()
 }
@@ -2655,6 +3251,11 @@ type Record_Offline_ struct {
 	Offline *Record_Offline `protobuf:"bytes,6,opt,name=offline,proto3,oneof"`
 }
 
+type Record_Openbao struct {
+	// openbao stores the information about an OpenBao key.
+	Openbao *Record_OpenBao `protobuf:"bytes,7,opt,name=openbao,proto3,oneof"`
+}
+
 func (*Record_Local_) isRecord_Item() {}
 
 func (*Record_Ledger_) isRecord_Item() {}
@@ -2662,6 +3263,8 @@ func (*Record_Ledger_) isRecord_Item() {}
 func (*Record_Multi_) isRecord_Item() {}
 
 func (*Record_Offline_) isRecord_Item() {}
+
+func (*Record_Openbao) isRecord_Item() {}
 
 // Item is a keyring item stored in a keyring backend.
 // Local item
@@ -2790,6 +3393,52 @@ func (*Record_Offline) Descriptor() ([]byte, []int) {
 	return file_cosmos_crypto_keyring_v1_record_proto_rawDescGZIP(), []int{0, 3}
 }
 
+// OpenBao item
+type Record_OpenBao struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// vault_path is the path in OpenBao where the key is stored (e.g., "transit/keys/my-key")
+	VaultPath string `protobuf:"bytes,1,opt,name=vault_path,json=vaultPath,proto3" json:"vault_path,omitempty"`
+	// key_name is the name of the key in OpenBao transit engine
+	KeyName string `protobuf:"bytes,2,opt,name=key_name,json=keyName,proto3" json:"key_name,omitempty"`
+}
+
+func (x *Record_OpenBao) Reset() {
+	*x = Record_OpenBao{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_cosmos_crypto_keyring_v1_record_proto_msgTypes[5]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *Record_OpenBao) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Record_OpenBao) ProtoMessage() {}
+
+// Deprecated: Use Record_OpenBao.ProtoReflect.Descriptor instead.
+func (*Record_OpenBao) Descriptor() ([]byte, []int) {
+	return file_cosmos_crypto_keyring_v1_record_proto_rawDescGZIP(), []int{0, 4}
+}
+
+func (x *Record_OpenBao) GetVaultPath() string {
+	if x != nil {
+		return x.VaultPath
+	}
+	return ""
+}
+
+func (x *Record_OpenBao) GetKeyName() string {
+	if x != nil {
+		return x.KeyName
+	}
+	return ""
+}
+
 var File_cosmos_crypto_keyring_v1_record_proto protoreflect.FileDescriptor
 
 var file_cosmos_crypto_keyring_v1_record_proto_rawDesc = []byte{
@@ -2802,7 +3451,7 @@ var file_cosmos_crypto_keyring_v1_record_proto_rawDesc = []byte{
 	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2f, 0x61, 0x6e, 0x79, 0x2e, 0x70, 0x72, 0x6f,
 	0x74, 0x6f, 0x1a, 0x1c, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2f, 0x63, 0x72, 0x79, 0x70, 0x74,
 	0x6f, 0x2f, 0x68, 0x64, 0x2f, 0x76, 0x31, 0x2f, 0x68, 0x64, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f,
-	0x22, 0xea, 0x03, 0x0a, 0x06, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x12, 0x12, 0x0a, 0x04, 0x6e,
+	0x22, 0xf5, 0x04, 0x0a, 0x06, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x12, 0x12, 0x0a, 0x04, 0x6e,
 	0x61, 0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x12,
 	0x2d, 0x0a, 0x07, 0x70, 0x75, 0x62, 0x5f, 0x6b, 0x65, 0x79, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b,
 	0x32, 0x14, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62,
@@ -2823,32 +3472,40 @@ var file_cosmos_crypto_keyring_v1_record_proto_rawDesc = []byte{
 	0x28, 0x0b, 0x32, 0x28, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x63, 0x72, 0x79, 0x70,
 	0x74, 0x6f, 0x2e, 0x6b, 0x65, 0x79, 0x72, 0x69, 0x6e, 0x67, 0x2e, 0x76, 0x31, 0x2e, 0x52, 0x65,
 	0x63, 0x6f, 0x72, 0x64, 0x2e, 0x4f, 0x66, 0x66, 0x6c, 0x69, 0x6e, 0x65, 0x48, 0x00, 0x52, 0x07,
-	0x6f, 0x66, 0x66, 0x6c, 0x69, 0x6e, 0x65, 0x1a, 0x38, 0x0a, 0x05, 0x4c, 0x6f, 0x63, 0x61, 0x6c,
-	0x12, 0x2f, 0x0a, 0x08, 0x70, 0x72, 0x69, 0x76, 0x5f, 0x6b, 0x65, 0x79, 0x18, 0x01, 0x20, 0x01,
-	0x28, 0x0b, 0x32, 0x14, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74,
-	0x6f, 0x62, 0x75, 0x66, 0x2e, 0x41, 0x6e, 0x79, 0x52, 0x07, 0x70, 0x72, 0x69, 0x76, 0x4b, 0x65,
-	0x79, 0x1a, 0x3e, 0x0a, 0x06, 0x4c, 0x65, 0x64, 0x67, 0x65, 0x72, 0x12, 0x34, 0x0a, 0x04, 0x70,
-	0x61, 0x74, 0x68, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x20, 0x2e, 0x63, 0x6f, 0x73, 0x6d,
-	0x6f, 0x73, 0x2e, 0x63, 0x72, 0x79, 0x70, 0x74, 0x6f, 0x2e, 0x68, 0x64, 0x2e, 0x76, 0x31, 0x2e,
-	0x42, 0x49, 0x50, 0x34, 0x34, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x52, 0x04, 0x70, 0x61, 0x74,
-	0x68, 0x1a, 0x07, 0x0a, 0x05, 0x4d, 0x75, 0x6c, 0x74, 0x69, 0x1a, 0x09, 0x0a, 0x07, 0x4f, 0x66,
-	0x66, 0x6c, 0x69, 0x6e, 0x65, 0x42, 0x06, 0x0a, 0x04, 0x69, 0x74, 0x65, 0x6d, 0x42, 0xeb, 0x01,
-	0x0a, 0x1c, 0x63, 0x6f, 0x6d, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x63, 0x72, 0x79,
-	0x70, 0x74, 0x6f, 0x2e, 0x6b, 0x65, 0x79, 0x72, 0x69, 0x6e, 0x67, 0x2e, 0x76, 0x31, 0x42, 0x0b,
-	0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x33, 0x63,
-	0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x61, 0x70, 0x69, 0x2f,
-	0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2f, 0x63, 0x72, 0x79, 0x70, 0x74, 0x6f, 0x2f, 0x6b, 0x65,
-	0x79, 0x72, 0x69, 0x6e, 0x67, 0x2f, 0x76, 0x31, 0x3b, 0x6b, 0x65, 0x79, 0x72, 0x69, 0x6e, 0x67,
-	0x76, 0x31, 0xa2, 0x02, 0x03, 0x43, 0x43, 0x4b, 0xaa, 0x02, 0x18, 0x43, 0x6f, 0x73, 0x6d, 0x6f,
-	0x73, 0x2e, 0x43, 0x72, 0x79, 0x70, 0x74, 0x6f, 0x2e, 0x4b, 0x65, 0x79, 0x72, 0x69, 0x6e, 0x67,
-	0x2e, 0x56, 0x31, 0xca, 0x02, 0x18, 0x43, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x5c, 0x43, 0x72, 0x79,
-	0x70, 0x74, 0x6f, 0x5c, 0x4b, 0x65, 0x79, 0x72, 0x69, 0x6e, 0x67, 0x5c, 0x56, 0x31, 0xe2, 0x02,
-	0x24, 0x43, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x5c, 0x43, 0x72, 0x79, 0x70, 0x74, 0x6f, 0x5c, 0x4b,
-	0x65, 0x79, 0x72, 0x69, 0x6e, 0x67, 0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74,
-	0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x1b, 0x43, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x3a, 0x3a,
-	0x43, 0x72, 0x79, 0x70, 0x74, 0x6f, 0x3a, 0x3a, 0x4b, 0x65, 0x79, 0x72, 0x69, 0x6e, 0x67, 0x3a,
-	0x3a, 0x56, 0x31, 0xc8, 0xe1, 0x1e, 0x00, 0x98, 0xe3, 0x1e, 0x00, 0x62, 0x06, 0x70, 0x72, 0x6f,
-	0x74, 0x6f, 0x33,
+	0x6f, 0x66, 0x66, 0x6c, 0x69, 0x6e, 0x65, 0x12, 0x44, 0x0a, 0x07, 0x6f, 0x70, 0x65, 0x6e, 0x62,
+	0x61, 0x6f, 0x18, 0x07, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x28, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f,
+	0x73, 0x2e, 0x63, 0x72, 0x79, 0x70, 0x74, 0x6f, 0x2e, 0x6b, 0x65, 0x79, 0x72, 0x69, 0x6e, 0x67,
+	0x2e, 0x76, 0x31, 0x2e, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x2e, 0x4f, 0x70, 0x65, 0x6e, 0x42,
+	0x61, 0x6f, 0x48, 0x00, 0x52, 0x07, 0x6f, 0x70, 0x65, 0x6e, 0x62, 0x61, 0x6f, 0x1a, 0x38, 0x0a,
+	0x05, 0x4c, 0x6f, 0x63, 0x61, 0x6c, 0x12, 0x2f, 0x0a, 0x08, 0x70, 0x72, 0x69, 0x76, 0x5f, 0x6b,
+	0x65, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x14, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c,
+	0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x41, 0x6e, 0x79, 0x52, 0x07,
+	0x70, 0x72, 0x69, 0x76, 0x4b, 0x65, 0x79, 0x1a, 0x3e, 0x0a, 0x06, 0x4c, 0x65, 0x64, 0x67, 0x65,
+	0x72, 0x12, 0x34, 0x0a, 0x04, 0x70, 0x61, 0x74, 0x68, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32,
+	0x20, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x63, 0x72, 0x79, 0x70, 0x74, 0x6f, 0x2e,
+	0x68, 0x64, 0x2e, 0x76, 0x31, 0x2e, 0x42, 0x49, 0x50, 0x34, 0x34, 0x50, 0x61, 0x72, 0x61, 0x6d,
+	0x73, 0x52, 0x04, 0x70, 0x61, 0x74, 0x68, 0x1a, 0x07, 0x0a, 0x05, 0x4d, 0x75, 0x6c, 0x74, 0x69,
+	0x1a, 0x09, 0x0a, 0x07, 0x4f, 0x66, 0x66, 0x6c, 0x69, 0x6e, 0x65, 0x1a, 0x43, 0x0a, 0x07, 0x4f,
+	0x70, 0x65, 0x6e, 0x42, 0x61, 0x6f, 0x12, 0x1d, 0x0a, 0x0a, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x5f,
+	0x70, 0x61, 0x74, 0x68, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x76, 0x61, 0x75, 0x6c,
+	0x74, 0x50, 0x61, 0x74, 0x68, 0x12, 0x19, 0x0a, 0x08, 0x6b, 0x65, 0x79, 0x5f, 0x6e, 0x61, 0x6d,
+	0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x6b, 0x65, 0x79, 0x4e, 0x61, 0x6d, 0x65,
+	0x42, 0x06, 0x0a, 0x04, 0x69, 0x74, 0x65, 0x6d, 0x42, 0xeb, 0x01, 0x0a, 0x1c, 0x63, 0x6f, 0x6d,
+	0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x63, 0x72, 0x79, 0x70, 0x74, 0x6f, 0x2e, 0x6b,
+	0x65, 0x79, 0x72, 0x69, 0x6e, 0x67, 0x2e, 0x76, 0x31, 0x42, 0x0b, 0x52, 0x65, 0x63, 0x6f, 0x72,
+	0x64, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x33, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73,
+	0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x63, 0x6f, 0x73, 0x6d, 0x6f,
+	0x73, 0x2f, 0x63, 0x72, 0x79, 0x70, 0x74, 0x6f, 0x2f, 0x6b, 0x65, 0x79, 0x72, 0x69, 0x6e, 0x67,
+	0x2f, 0x76, 0x31, 0x3b, 0x6b, 0x65, 0x79, 0x72, 0x69, 0x6e, 0x67, 0x76, 0x31, 0xa2, 0x02, 0x03,
+	0x43, 0x43, 0x4b, 0xaa, 0x02, 0x18, 0x43, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x43, 0x72, 0x79,
+	0x70, 0x74, 0x6f, 0x2e, 0x4b, 0x65, 0x79, 0x72, 0x69, 0x6e, 0x67, 0x2e, 0x56, 0x31, 0xca, 0x02,
+	0x18, 0x43, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x5c, 0x43, 0x72, 0x79, 0x70, 0x74, 0x6f, 0x5c, 0x4b,
+	0x65, 0x79, 0x72, 0x69, 0x6e, 0x67, 0x5c, 0x56, 0x31, 0xe2, 0x02, 0x24, 0x43, 0x6f, 0x73, 0x6d,
+	0x6f, 0x73, 0x5c, 0x43, 0x72, 0x79, 0x70, 0x74, 0x6f, 0x5c, 0x4b, 0x65, 0x79, 0x72, 0x69, 0x6e,
+	0x67, 0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61,
+	0xea, 0x02, 0x1b, 0x43, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x3a, 0x3a, 0x43, 0x72, 0x79, 0x70, 0x74,
+	0x6f, 0x3a, 0x3a, 0x4b, 0x65, 0x79, 0x72, 0x69, 0x6e, 0x67, 0x3a, 0x3a, 0x56, 0x31, 0xc8, 0xe1,
+	0x1e, 0x00, 0x98, 0xe3, 0x1e, 0x00, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -2863,29 +3520,31 @@ func file_cosmos_crypto_keyring_v1_record_proto_rawDescGZIP() []byte {
 	return file_cosmos_crypto_keyring_v1_record_proto_rawDescData
 }
 
-var file_cosmos_crypto_keyring_v1_record_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
+var file_cosmos_crypto_keyring_v1_record_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
 var file_cosmos_crypto_keyring_v1_record_proto_goTypes = []interface{}{
 	(*Record)(nil),         // 0: cosmos.crypto.keyring.v1.Record
 	(*Record_Local)(nil),   // 1: cosmos.crypto.keyring.v1.Record.Local
 	(*Record_Ledger)(nil),  // 2: cosmos.crypto.keyring.v1.Record.Ledger
 	(*Record_Multi)(nil),   // 3: cosmos.crypto.keyring.v1.Record.Multi
 	(*Record_Offline)(nil), // 4: cosmos.crypto.keyring.v1.Record.Offline
-	(*anypb.Any)(nil),      // 5: google.protobuf.Any
-	(*v1.BIP44Params)(nil), // 6: cosmos.crypto.hd.v1.BIP44Params
+	(*Record_OpenBao)(nil), // 5: cosmos.crypto.keyring.v1.Record.OpenBao
+	(*anypb.Any)(nil),      // 6: google.protobuf.Any
+	(*v1.BIP44Params)(nil), // 7: cosmos.crypto.hd.v1.BIP44Params
 }
 var file_cosmos_crypto_keyring_v1_record_proto_depIdxs = []int32{
-	5, // 0: cosmos.crypto.keyring.v1.Record.pub_key:type_name -> google.protobuf.Any
+	6, // 0: cosmos.crypto.keyring.v1.Record.pub_key:type_name -> google.protobuf.Any
 	1, // 1: cosmos.crypto.keyring.v1.Record.local:type_name -> cosmos.crypto.keyring.v1.Record.Local
 	2, // 2: cosmos.crypto.keyring.v1.Record.ledger:type_name -> cosmos.crypto.keyring.v1.Record.Ledger
 	3, // 3: cosmos.crypto.keyring.v1.Record.multi:type_name -> cosmos.crypto.keyring.v1.Record.Multi
 	4, // 4: cosmos.crypto.keyring.v1.Record.offline:type_name -> cosmos.crypto.keyring.v1.Record.Offline
-	5, // 5: cosmos.crypto.keyring.v1.Record.Local.priv_key:type_name -> google.protobuf.Any
-	6, // 6: cosmos.crypto.keyring.v1.Record.Ledger.path:type_name -> cosmos.crypto.hd.v1.BIP44Params
-	7, // [7:7] is the sub-list for method output_type
-	7, // [7:7] is the sub-list for method input_type
-	7, // [7:7] is the sub-list for extension type_name
-	7, // [7:7] is the sub-list for extension extendee
-	0, // [0:7] is the sub-list for field type_name
+	5, // 5: cosmos.crypto.keyring.v1.Record.openbao:type_name -> cosmos.crypto.keyring.v1.Record.OpenBao
+	6, // 6: cosmos.crypto.keyring.v1.Record.Local.priv_key:type_name -> google.protobuf.Any
+	7, // 7: cosmos.crypto.keyring.v1.Record.Ledger.path:type_name -> cosmos.crypto.hd.v1.BIP44Params
+	8, // [8:8] is the sub-list for method output_type
+	8, // [8:8] is the sub-list for method input_type
+	8, // [8:8] is the sub-list for extension type_name
+	8, // [8:8] is the sub-list for extension extendee
+	0, // [0:8] is the sub-list for field type_name
 }
 
 func init() { file_cosmos_crypto_keyring_v1_record_proto_init() }
@@ -2954,12 +3613,25 @@ func file_cosmos_crypto_keyring_v1_record_proto_init() {
 				return nil
 			}
 		}
+		file_cosmos_crypto_keyring_v1_record_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*Record_OpenBao); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	file_cosmos_crypto_keyring_v1_record_proto_msgTypes[0].OneofWrappers = []interface{}{
 		(*Record_Local_)(nil),
 		(*Record_Ledger_)(nil),
 		(*Record_Multi_)(nil),
 		(*Record_Offline_)(nil),
+		(*Record_Openbao)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -2967,7 +3639,7 @@ func file_cosmos_crypto_keyring_v1_record_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_cosmos_crypto_keyring_v1_record_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   5,
+			NumMessages:   6,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

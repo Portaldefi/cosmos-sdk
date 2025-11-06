@@ -17,7 +17,7 @@ const defaultConfigTemplate = `# This is a TOML config file.
 
 # The network chain ID
 chain-id = "{{ .ChainID }}"
-# The keyring's backend, where the keys are stored (os|file|kwallet|pass|test|memory)
+# The keyring's backend, where the keys are stored (os|file|kwallet|pass|test|memory|openbao)
 keyring-backend = "{{ .KeyringBackend }}"
 # CLI output format (text|json)
 output = "{{ .Output }}"
@@ -25,6 +25,16 @@ output = "{{ .Output }}"
 node = "{{ .Node }}"
 # Transaction broadcasting mode (sync|async)
 broadcast-mode = "{{ .BroadcastMode }}"
+
+###############################################################################
+###                         OpenBao Configuration                            ###
+###############################################################################
+
+# OpenBao server address (can also be set via OPENBAO_ADDR environment variable)
+openbao-addr = "{{ .OpenBaoAddr }}"
+# Path to file containing OpenBao token (can also be set via OPENBAO_TOKEN_FILE environment variable)
+# If not set, will use OPENBAO_TOKEN environment variable
+openbao-token-file = "{{ .OpenBaoTokenFile }}"
 `
 
 // writeConfigToFile parses defaultConfigTemplate, renders config using the template and writes it to

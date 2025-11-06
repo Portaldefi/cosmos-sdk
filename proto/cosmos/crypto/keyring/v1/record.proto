@@ -27,6 +27,8 @@ message Record {
     Multi multi = 5;
     // Offline does not store any other information.
     Offline offline = 6;
+    // openbao stores the information about an OpenBao key.
+    OpenBao openbao = 7;
   }
 
   // Item is a keyring item stored in a keyring backend.
@@ -45,4 +47,12 @@ message Record {
 
   // Offline item
   message Offline {}
+
+  // OpenBao item
+  message OpenBao {
+    // vault_path is the vault name (key-manager name) in OpenBao Ethereum plugin (e.g., "foundation")
+    string vault_path = 1;
+    // key_name is the Ethereum address for this key (e.g., "0x1234...")
+    string key_name = 2;
+  }
 }
