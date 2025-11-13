@@ -37,12 +37,8 @@
 //		be unlocked and it should be used only for testing purposes.
 //	memory	Same instance as returned by NewInMemory. This backend uses a transient storage. Keys
 //		are discarded when the process terminates or the type instance is garbage collected.
-//	openbao	This backend uses OpenBao (or HashiCorp Vault) for key storage. It uses the file
-//		backend with a directory that should be mounted from OpenBao/Vault using FUSE or
-//		similar mounting mechanisms. This provides integration with OpenBao's encryption
+//	bao	This backend uses Bao (or HashiCorp Vault) for key storage. It uses the file
+//		backend with a directory that should be mounted from Bao/Vault using FUSE or
+//		similar mounting mechanisms. This provides integration with Bao's encryption
 //		and access control while using the standard file-based keyring storage.
-//		https://github.com/openbao/openbao
-//		Configuration via environment variable:
-//		- OPENBAO_MOUNT_POINT: Directory path where OpenBao is mounted (defaults to
-//		  <app_home>/keyring-openbao if not set)
 package keyring

@@ -40,12 +40,9 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ### Features
 
-* [#2](https://github.com/Portaldefi/cosmos-sdk/pull/2) Add OpenBao keyring backend support for secure key management and signing.
-  * New `openbao` keyring backend for storing key references and signing with OpenBao Ethereum plugin
-  * Added `WithOpenBaoConfig()` option to configure OpenBao address and token file path
-  * OpenBao configuration can be set in `client.toml` (`openbao-addr`, `openbao-token-file`)
-  * Supports EIP-55 checksummed Ethereum addresses for OpenBao keys
-  * Keys are stored as references with vault path and Ethereum address; signing is performed by OpenBao
+* [#4](https://github.com/Portaldefi/cosmos-sdk/pull/4) Update Bao keyring backend support for secure key management and signing.
+  * Remove password when add key with Bao keyring backend
+  * Update variable name from `openbao` to `bao`
 
 ## [v0.50.6](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.50.6) - 2024-04-22
 
