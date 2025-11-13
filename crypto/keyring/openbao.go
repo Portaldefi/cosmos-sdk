@@ -17,21 +17,21 @@ import (
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 )
 
-// OpenBaoClient is a client for interacting with OpenBao/Vault
-type OpenBaoClient struct {
+// BaoClient is a client for interacting with Bao/Vault
+type BaoClient struct {
 	address string
 	token   string
 	client  *http.Client
 }
 
-// NewOpenBaoClient creates a new OpenBao client
+// NewBaoClient creates a new Bao client
 // It reads from config parameters first, then falls back to environment variables
 // Parameters can be empty strings to use environment variables
-func NewOpenBaoClient(configAddr, configTokenFile string) (*OpenBaoClient, error) {
+func NewBaoClient(configAddr, configTokenFile string) (*BaoClient, error) {
 	// Read address: config
 	address := configAddr
 	if address == "" {
-		return nil, errors.New("OpenBao address must be set in client.toml (openbao-addr)")
+		return nil, errors.New("Bao address must be set in client.toml (bao-addr)")
 	}
 
 	// Read token: try token file config
@@ -42,14 +42,14 @@ func NewOpenBaoClient(configAddr, configTokenFile string) (*OpenBaoClient, error
 		// Read token from file
 		tokenBytes, err := os.ReadFile(tokenFile)
 		if err != nil {
-			return nil, errors.Wrapf(err, "failed to read OpenBao token from file: %s", tokenFile)
+			return nil, errors.Wrapf(err, "failed to read Bao token from file: %s", tokenFile)
 		}
 		token = strings.TrimSpace(string(tokenBytes))
 	} else {
-		return nil, errors.New("OpenBao token must be set in client.toml (openbao-token-file)")
+		return nil, errors.New("Bao token must be set in client.toml (bao-token-file)")
 	}
 
-	return &OpenBaoClient{
+	return &BaoClient{
 		address: address,
 		token:   token,
 		client: &http.Client{
@@ -58,10 +58,10 @@ func NewOpenBaoClient(configAddr, configTokenFile string) (*OpenBaoClient, error
 	}, nil
 }
 
-// SignData signs data using OpenBao Ethereum plugin
+// SignData signs data using Bao Ethereum plugin
 // This uses the endpoint: /v1/ethereum/key-managers/{vault-name}/sign
-func (c *OpenBaoClient) SignData(vaultName, keyAddress string, data []byte) ([]byte, error) {
-	// OpenBao Ethereum plugin endpoint
+func (c *BaoClient) SignData(vaultName, keyAddress string, data []byte) ([]byte, error) {
+	// Bao Ethereum plugin endpoint
 	url := fmt.Sprintf("%s/v1/ethereum/key-managers/%s/sign", c.address, vaultName)
 
 	// Hash the data if it's not already 32 bytes (Keccak256)
@@ -96,7 +96,7 @@ func (c *OpenBaoClient) SignData(vaultName, keyAddress string, data []byte) ([]b
 	// Send request
 	resp, err := c.client.Do(req)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to send request to OpenBao")
+		return nil, errors.Wrap(err, "failed to send request to Bao")
 	}
 	defer resp.Body.Close()
 
@@ -106,10 +106,10 @@ func (c *OpenBaoClient) SignData(vaultName, keyAddress string, data []byte) ([]b
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, errors.Newf("OpenBao returned status %d: %s", resp.StatusCode, string(body))
+		return nil, errors.Newf("Bao returned status %d: %s", resp.StatusCode, string(body))
 	}
 
-	// Parse response (OpenBao Ethereum plugin format)
+	// Parse response (Bao Ethereum plugin format)
 	var result BaoSignResponse
 	if err := json.Unmarshal(body, &result); err != nil {
 		return nil, errors.Wrap(err, "failed to unmarshal response")
@@ -117,7 +117,7 @@ func (c *OpenBaoClient) SignData(vaultName, keyAddress string, data []byte) ([]b
 
 	// Check if signature exists
 	if result.Data.Signature == "" {
-		return nil, errors.New("empty signature returned from OpenBao")
+		return nil, errors.New("empty signature returned from Bao")
 	}
 
 	// Decode hex signature
@@ -129,7 +129,7 @@ func (c *OpenBaoClient) SignData(vaultName, keyAddress string, data []byte) ([]b
 	return signature, nil
 }
 
-// BaoSignResponse represents the response from OpenBao Ethereum plugin
+// BaoSignResponse represents the response from Bao Ethereum plugin
 type BaoSignResponse struct {
 	Auth interface{} `json:"auth"`
 	Data struct {
@@ -143,17 +143,17 @@ type BaoSignResponse struct {
 	WrapInfo      interface{} `json:"wrap_info"`
 }
 
-// SignWithOpenBao signs a message using OpenBao Ethereum plugin
+// SignWithBao signs a message using Bao Ethereum plugin
 // configAddr and configTokenFile can be empty strings to use environment variables
-func SignWithOpenBao(k *Record, msg []byte, configAddr, configTokenFile string) (sig []byte, pub cryptotypes.PubKey, err error) {
-	openBaoInfo := k.GetOpenbao()
-	if openBaoInfo == nil {
-		return nil, nil, errors.New("not an OpenBao record")
+func SignWithBao(k *Record, msg []byte, configAddr, configTokenFile string) (sig []byte, pub cryptotypes.PubKey, err error) {
+	baoInfo := k.GetBao()
+	if baoInfo == nil {
+		return nil, nil, errors.New("not an Bao record")
 	}
 
-	client, err := NewOpenBaoClient(configAddr, configTokenFile)
+	client, err := NewBaoClient(configAddr, configTokenFile)
 	if err != nil {
-		return nil, nil, errors.Wrap(err, "failed to create OpenBao client")
+		return nil, nil, errors.Wrap(err, "failed to create Bao client")
 	}
 
 	// Get the Ethereum address from the public key
@@ -165,12 +165,12 @@ func SignWithOpenBao(k *Record, msg []byte, configAddr, configTokenFile string) 
 	// Extract the address from public key (first 20 bytes of Keccak256 hash)
 	// The VaultPath field stores the vault name (key-manager name)
 	// The KeyName field stores the Ethereum address
-	vaultName := openBaoInfo.VaultPath
-	address := openBaoInfo.KeyName
+	vaultName := baoInfo.VaultPath
+	address := baoInfo.KeyName
 
 	sig, err = client.SignData(vaultName, address, msg)
 	if err != nil {
-		return nil, nil, errors.Wrap(err, "failed to sign with OpenBao")
+		return nil, nil, errors.Wrap(err, "failed to sign with Bao")
 	}
 
 	return sig, pub, nil

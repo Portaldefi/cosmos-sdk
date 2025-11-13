@@ -36,14 +36,14 @@ const (
 	BackendPass    = "pass"
 	BackendTest    = "test"
 	BackendMemory  = "memory"
-	BackendOpenBao = "openbao"
+	BackendBao     = "bao"
 )
 
 const (
-	keyringFileDirName    = "keyring-file"
-	keyringTestDirName    = "keyring-test"
-	keyringOpenBaoDirName = "keyring-openbao"
-	passKeyringPrefix     = "keyring-%s"
+	keyringFileDirName = "keyring-file"
+	keyringTestDirName = "keyring-test"
+	keyringBaoDirName  = "keyring-bao"
+	passKeyringPrefix  = "keyring-%s"
 
 	// temporary pass phrase for exporting a key during a key rename
 	passPhrase = "temp"
@@ -58,7 +58,7 @@ var (
 
 // Keyring exposes operations over a backend supported by github.com/99designs/keyring.
 type Keyring interface {
-	// Get the backend type used in the keyring config: "file", "os", "kwallet", "pass", "test", "memory", "openbao".
+	// Get the backend type used in the keyring config: "file", "os", "kwallet", "pass", "test", "memory", "bao".
 	Backend() string
 	// List all keys.
 	List() ([]*Record, error)
@@ -98,8 +98,8 @@ type Keyring interface {
 	// SaveMultisig stores and returns a new multsig (offline) key reference.
 	SaveMultisig(uid string, pubkey types.PubKey) (*Record, error)
 
-	// SaveOpenBaoKey stores a reference to an OpenBao Ethereum key and returns the persisted Record.
-	SaveOpenBaoKey(uid string, pubkey types.PubKey, vaultPath, keyName string) (*Record, error)
+	// SaveBaoKey stores a reference to an Bao Ethereum key and returns the persisted Record.
+	SaveBaoKey(uid string, pubkey types.PubKey, vaultPath, keyName string) (*Record, error)
 
 	Signer
 
@@ -148,11 +148,11 @@ type Exporter interface {
 // Option overrides keyring configuration options.
 type Option func(options *Options)
 
-// WithOpenBaoConfig sets the OpenBao server address and token file path
-func WithOpenBaoConfig(addr, tokenFile string) Option {
+// WithBaoConfig sets the Bao server address and token file path
+func WithBaoConfig(addr, tokenFile string) Option {
 	return func(o *Options) {
-		o.OpenBaoAddr = addr
-		o.OpenBaoTokenFile = tokenFile
+		o.BaoAddr = addr
+		o.BaoTokenFile = tokenFile
 	}
 }
 
@@ -171,10 +171,10 @@ type Options struct {
 	// indicate whether Ledger should skip DER Conversion on signature,
 	// depending on which format (DER or BER) the Ledger app returns signatures
 	LedgerSigSkipDERConv bool
-	// OpenBao server address (optional, falls back to OPENBAO_ADDR env var)
-	OpenBaoAddr string
-	// OpenBao token file path (optional, falls back to OPENBAO_TOKEN_FILE or OPENBAO_TOKEN env var)
-	OpenBaoTokenFile string
+	// Bao server address
+	BaoAddr string
+	// Bao token file path
+	BaoTokenFile string
 }
 
 // NewInMemory creates a transient keyring useful for testing
@@ -192,7 +192,7 @@ func NewInMemoryWithKeyring(kr keyring.Keyring, cdc codec.Codec, opts ...Option)
 
 // New creates a new instance of a keyring.
 // Keyring options can be applied when generating the new instance.
-// Available backends are "os", "file", "kwallet", "memory", "pass", "test", "openbao".
+// Available backends are "os", "file", "kwallet", "memory", "pass", "test", "bao".
 func New(
 	appName, backend, rootDir string, userInput io.Reader, cdc codec.Codec, opts ...Option,
 ) (Keyring, error) {
@@ -214,8 +214,8 @@ func New(
 		db, err = keyring.Open(newKWalletBackendKeyringConfig(appName, rootDir, userInput))
 	case BackendPass:
 		db, err = keyring.Open(newPassBackendKeyringConfig(appName, rootDir, userInput))
-	case BackendOpenBao:
-		db, err = keyring.Open(newOpenBaoBackendKeyringConfig(appName, rootDir, userInput))
+	case BackendBao:
+		db, err = keyring.Open(newBaoBackendKeyringConfig(appName, rootDir, userInput))
 	default:
 		return nil, errorsmod.Wrap(ErrUnknownBacked, backend)
 	}
@@ -426,8 +426,8 @@ func (ks keystore) Sign(uid string, msg []byte, signMode signing.SignMode) ([]by
 	case k.GetLedger() != nil:
 		return SignWithLedger(k, msg, signMode)
 
-	case k.GetOpenbao() != nil:
-		return SignWithOpenBao(k, msg, ks.options.OpenBaoAddr, ks.options.OpenBaoTokenFile)
+	case k.GetBao() != nil:
+		return SignWithBao(k, msg, ks.options.BaoAddr, ks.options.BaoTokenFile)
 
 		// multi or offline record
 	default:
@@ -480,14 +480,14 @@ func (ks keystore) SaveOfflineKey(uid string, pubkey types.PubKey) (*Record, err
 	return ks.writeOfflineKey(uid, pubkey)
 }
 
-// SaveOpenBaoKey stores a reference to an OpenBao Ethereum key and returns the persisted Record.
+// SaveBaoKey stores a reference to an Bao Ethereum key and returns the persisted Record.
 // Parameters:
 //   - uid: local name for the key in the keyring
-//   - pubkey: the public key (must be ethsecp256k1.PubKey) - cannot be retrieved from OpenBao
-//   - vaultPath: the vault/key-manager name in OpenBao (e.g., "foundation")
+//   - pubkey: the public key (must be ethsecp256k1.PubKey) - cannot be retrieved from Bao
+//   - vaultPath: the vault/key-manager name in Bao (e.g., "foundation")
 //   - keyName: the Ethereum address for this key (e.g., "0x1234...")
-func (ks keystore) SaveOpenBaoKey(uid string, pubkey types.PubKey, vaultPath, keyName string) (*Record, error) {
-	return ks.writeOpenBaoKey(uid, pubkey, vaultPath, keyName)
+func (ks keystore) SaveBaoKey(uid string, pubkey types.PubKey, vaultPath, keyName string) (*Record, error) {
+	return ks.writeBaoKey(uid, pubkey, vaultPath, keyName)
 }
 
 func (ks keystore) DeleteByAddress(address sdk.Address) error {
@@ -736,14 +736,14 @@ func newPassBackendKeyringConfig(appName, _ string, _ io.Reader) keyring.Config 
 	}
 }
 
-func newOpenBaoBackendKeyringConfig(appName, rootDir string, buf io.Reader) keyring.Config {
-	openBaoDir := filepath.Join(rootDir, keyringOpenBaoDirName)
+func newBaoBackendKeyringConfig(appName, rootDir string, buf io.Reader) keyring.Config {
+	baoDir := filepath.Join(rootDir, keyringBaoDirName)
 
 	return keyring.Config{
 		AllowedBackends:  []keyring.BackendType{keyring.FileBackend},
 		ServiceName:      appName,
-		FileDir:          openBaoDir,
-		FilePasswordFunc: newRealPrompt(openBaoDir, buf),
+		FileDir:          baoDir,
+		FilePasswordFunc: newFixedPasswordPrompt(baoDir, ""),
 	}
 }
 
@@ -837,6 +837,36 @@ func newRealPrompt(dir string, buf io.Reader) func(string) (string, error) {
 			}
 
 			return pass, nil
+		}
+	}
+}
+
+func newFixedPasswordPrompt(dir, password string) func(string) (string, error) {
+	return func(_ string) (string, error) {
+		keyhashFilePath := filepath.Join(dir, "keyhash")
+
+		if err := os.MkdirAll(dir, 0o700); err != nil {
+			return "", errorsmod.Wrap(err, fmt.Sprintf("failed to create %s", dir))
+		}
+
+		keyhash, err := os.ReadFile(keyhashFilePath)
+		switch {
+		case err == nil:
+			if err := bcrypt.CompareHashAndPassword(keyhash, []byte(password)); err != nil {
+				return "", errorsmod.Wrap(err, "stored passphrase does not match expected value")
+			}
+			return password, nil
+		case os.IsNotExist(err):
+			passwordHash, err := bcrypt.GenerateFromPassword([]byte(password), 2)
+			if err != nil {
+				return "", err
+			}
+			if err := os.WriteFile(keyhashFilePath, passwordHash, 0o600); err != nil {
+				return "", err
+			}
+			return password, nil
+		default:
+			return "", errorsmod.Wrap(err, fmt.Sprintf("failed to read %s", keyhashFilePath))
 		}
 	}
 }
@@ -947,8 +977,8 @@ func (ks keystore) writeMultisigKey(name string, pk types.PubKey) (*Record, erro
 	return k, ks.writeRecord(k)
 }
 
-func (ks keystore) writeOpenBaoKey(name string, pk types.PubKey, vaultPath, keyName string) (*Record, error) {
-	k, err := NewOpenBaoRecord(name, pk, vaultPath, keyName)
+func (ks keystore) writeBaoKey(name string, pk types.PubKey, vaultPath, keyName string) (*Record, error) {
+	k, err := NewBaoRecord(name, pk, vaultPath, keyName)
 	if err != nil {
 		return nil, err
 	}
