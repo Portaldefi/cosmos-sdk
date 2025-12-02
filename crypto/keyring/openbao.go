@@ -7,8 +7,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"os"
-	"strings"
 	"time"
 
 	"github.com/cockroachdb/errors"
@@ -20,38 +18,20 @@ import (
 // BaoClient is a client for interacting with Bao/Vault
 type BaoClient struct {
 	address string
-	token   string
 	client  *http.Client
 }
 
 // NewBaoClient creates a new Bao client
-// It reads from config parameters first, then falls back to environment variables
-// Parameters can be empty strings to use environment variables
-func NewBaoClient(configAddr, configTokenFile string) (*BaoClient, error) {
-	// Read address: config
+// It reads address from configuration; token-based auth is not used.
+func NewBaoClient(configAddr string) (*BaoClient, error) {
+	// Read address from config
 	address := configAddr
 	if address == "" {
 		return nil, errors.New("Bao address must be set in client.toml (bao-addr)")
 	}
 
-	// Read token: try token file config
-	var token string
-	tokenFile := configTokenFile
-
-	if tokenFile != "" {
-		// Read token from file
-		tokenBytes, err := os.ReadFile(tokenFile)
-		if err != nil {
-			return nil, errors.Wrapf(err, "failed to read Bao token from file: %s", tokenFile)
-		}
-		token = strings.TrimSpace(string(tokenBytes))
-	} else {
-		return nil, errors.New("Bao token must be set in client.toml (bao-token-file)")
-	}
-
 	return &BaoClient{
 		address: address,
-		token:   token,
 		client: &http.Client{
 			Timeout: 10 * time.Second,
 		},
@@ -89,8 +69,6 @@ func (c *BaoClient) SignData(vaultName, keyAddress string, data []byte) ([]byte,
 		return nil, errors.Wrap(err, "failed to create request")
 	}
 
-	// Use Bearer token authentication (not X-Vault-Token)
-	req.Header.Set("Authorization", "Bearer "+c.token)
 	req.Header.Set("Content-Type", "application/json")
 
 	// Send request
@@ -144,14 +122,14 @@ type BaoSignResponse struct {
 }
 
 // SignWithBao signs a message using Bao Ethereum plugin
-// configAddr and configTokenFile can be empty strings to use environment variables
-func SignWithBao(k *Record, msg []byte, configAddr, configTokenFile string) (sig []byte, pub cryptotypes.PubKey, err error) {
+// configAddr is the Bao server address
+func SignWithBao(k *Record, msg []byte, configAddr string) (sig []byte, pub cryptotypes.PubKey, err error) {
 	baoInfo := k.GetBao()
 	if baoInfo == nil {
 		return nil, nil, errors.New("not an Bao record")
 	}
 
-	client, err := NewBaoClient(configAddr, configTokenFile)
+	client, err := NewBaoClient(configAddr)
 	if err != nil {
 		return nil, nil, errors.Wrap(err, "failed to create Bao client")
 	}

@@ -15,9 +15,8 @@ func DefaultConfig() *ClientConfig {
 		KeyringBackend: "os",
 		Output:         "text",
 		Node:           "tcp://localhost:26657",
-		BroadcastMode:  "sync",
-		BaoAddr:        "",
-		BaoTokenFile:   "",
+		BroadcastMode: "sync",
+		BaoAddr:       "",
 	}
 }
 
@@ -28,7 +27,6 @@ type ClientConfig struct {
 	Node           string `mapstructure:"node" json:"node"`
 	BroadcastMode  string `mapstructure:"broadcast-mode" json:"broadcast-mode"`
 	BaoAddr        string `mapstructure:"bao-addr" json:"bao-addr"`
-	BaoTokenFile   string `mapstructure:"bao-token-file" json:"bao-token-file"`
 }
 
 func (c *ClientConfig) SetChainID(chainID string) {
@@ -102,8 +100,8 @@ func ReadFromClientConfig(ctx client.Context) (client.Context, error) {
 		WithKeyringDir(ctx.HomeDir)
 
 	// Add Bao config to keyring options
-	if conf.BaoAddr != "" || conf.BaoTokenFile != "" {
-		ctx = ctx.WithKeyringOptions(keyring.WithBaoConfig(conf.BaoAddr, conf.BaoTokenFile))
+	if conf.BaoAddr != "" {
+		ctx = ctx.WithKeyringOptions(keyring.WithBaoConfig(conf.BaoAddr))
 	}
 
 	keyring, err := client.NewKeyringFromBackend(ctx, conf.KeyringBackend)

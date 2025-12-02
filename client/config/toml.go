@@ -32,8 +32,6 @@ broadcast-mode = "{{ .BroadcastMode }}"
 
 # Bao server address
 bao-addr = "{{ .BaoAddr }}"
-# Path to file containing Bao token
-bao-token-file = "{{ .BaoTokenFile }}"
 `
 
 // writeConfigToFile parses defaultConfigTemplate, renders config using the template and writes it to
