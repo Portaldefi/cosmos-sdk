@@ -10,19 +10,16 @@ import (
 
 // TestBaoBackend tests the Bao keyring backend.
 // This test requires a running Bao/Vault server with the transit engine enabled.
-// Set BaoAddr and BaoTokenFile environment variables before running.
+// Set BaoAddr environment variable before running.
 func TestBaoBackend(t *testing.T) {
 	// Skip if Bao is not configured
 	if os.Getenv("BAO_ADDR") == "" && os.Getenv("VAULT_ADDR") == "" {
 		t.Skip("Skipping Bao test: BAO_ADDR or VAULT_ADDR not set")
 	}
-	if os.Getenv("BAO_TOKEN") == "" && os.Getenv("VAULT_TOKEN") == "" {
-		t.Skip("Skipping Bao test: BAO_TOKEN or VAULT_TOKEN not set")
-	}
 
 	t.Run("NewBaoClient", func(t *testing.T) {
-		// Pass empty strings to use environment variables
-		client, err := keyring.NewBaoClient("", "")
+		// Pass empty string to use environment variables / defaults
+		client, err := keyring.NewBaoClient("")
 		require.NoError(t, err)
 		require.NotNil(t, client)
 	})
@@ -135,9 +132,8 @@ func ExampleBaoKeyring() {
 	// This example shows how to use the Bao Ethereum keyring backend
 	// Prerequisites:
 	// 1. Set BAO_ADDR="http://localhost:8200"
-	// 2. Set BAO_TOKEN="your-bearer-token"
-	// 3. Have Bao Ethereum plugin configured with a key-manager
-	// 4. Know your key's Ethereum address and public key
+	// 2. Have Bao Ethereum plugin configured with a key-manager
+	// 3. Know your key's Ethereum address and public key
 
 	/*
 		import (

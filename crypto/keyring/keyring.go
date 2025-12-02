@@ -148,11 +148,10 @@ type Exporter interface {
 // Option overrides keyring configuration options.
 type Option func(options *Options)
 
-// WithBaoConfig sets the Bao server address and token file path
-func WithBaoConfig(addr, tokenFile string) Option {
+// WithBaoConfig sets the Bao server address
+func WithBaoConfig(addr string) Option {
 	return func(o *Options) {
 		o.BaoAddr = addr
-		o.BaoTokenFile = tokenFile
 	}
 }
 
@@ -173,8 +172,6 @@ type Options struct {
 	LedgerSigSkipDERConv bool
 	// Bao server address
 	BaoAddr string
-	// Bao token file path
-	BaoTokenFile string
 }
 
 // NewInMemory creates a transient keyring useful for testing
@@ -427,7 +424,7 @@ func (ks keystore) Sign(uid string, msg []byte, signMode signing.SignMode) ([]by
 		return SignWithLedger(k, msg, signMode)
 
 	case k.GetBao() != nil:
-		return SignWithBao(k, msg, ks.options.BaoAddr, ks.options.BaoTokenFile)
+		return SignWithBao(k, msg, ks.options.BaoAddr)
 
 		// multi or offline record
 	default:
