@@ -39,10 +39,10 @@ func NewBaoClient(configAddr string) (*BaoClient, error) {
 }
 
 // SignData signs data using Bao Ethereum plugin
-// This uses the endpoint: /v1/ethereum/key-managers/{vault-name}/sign
+// This uses the endpoint: /ethereum/key-managers/{vault-name}/sign
 func (c *BaoClient) SignData(vaultName, keyAddress string, data []byte) ([]byte, error) {
 	// Bao Ethereum plugin endpoint
-	url := fmt.Sprintf("%s/v1/ethereum/key-managers/%s/sign", c.address, vaultName)
+	url := fmt.Sprintf("%s/ethereum/key-managers/%s/sign", c.address, vaultName)
 
 	// Hash the data if it's not already 32 bytes (Keccak256)
 	var hashToSign []byte
