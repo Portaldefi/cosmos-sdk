@@ -149,9 +149,11 @@ type Exporter interface {
 type Option func(options *Options)
 
 // WithBaoConfig sets the Bao server address
-func WithBaoConfig(addr string) Option {
+func WithBaoConfig(addr, namespace, mountPath string) Option {
 	return func(o *Options) {
 		o.BaoAddr = addr
+		o.BaoNamespace = namespace
+		o.BaoMountPath = mountPath
 	}
 }
 
@@ -172,6 +174,10 @@ type Options struct {
 	LedgerSigSkipDERConv bool
 	// Bao server address
 	BaoAddr string
+	// Bao namespace
+	BaoNamespace string
+	// Bao mount path
+	BaoMountPath string
 }
 
 // NewInMemory creates a transient keyring useful for testing
@@ -424,7 +430,7 @@ func (ks keystore) Sign(uid string, msg []byte, signMode signing.SignMode) ([]by
 		return SignWithLedger(k, msg, signMode)
 
 	case k.GetBao() != nil:
-		return SignWithBao(k, msg, ks.options.BaoAddr)
+		return SignWithBao(k, msg, ks.options.BaoAddr, ks.options.BaoNamespace, ks.options.BaoMountPath)
 
 		// multi or offline record
 	default:

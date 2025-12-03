@@ -17,21 +17,29 @@ import (
 
 // BaoClient is a client for interacting with Bao/Vault
 type BaoClient struct {
-	address string
-	client  *http.Client
+	address   string
+	namespace string
+	mountPath string
+	client    *http.Client
 }
 
 // NewBaoClient creates a new Bao client
 // It reads address from configuration; token-based auth is not used.
-func NewBaoClient(configAddr string) (*BaoClient, error) {
+func NewBaoClient(configAddr, namespace, mountPath string) (*BaoClient, error) {
 	// Read address from config
 	address := configAddr
 	if address == "" {
 		return nil, errors.New("Bao address must be set in client.toml (bao-addr)")
 	}
 
+	if mountPath == "" {
+		return nil, errors.New("Mount Path must be set in client.toml (mount-path)")
+	}
+
 	return &BaoClient{
-		address: address,
+		address:   address,
+		namespace: namespace,
+		mountPath: mountPath,
 		client: &http.Client{
 			Timeout: 10 * time.Second,
 		},
@@ -42,7 +50,16 @@ func NewBaoClient(configAddr string) (*BaoClient, error) {
 // This uses the endpoint: /ethereum/key-managers/{vault-name}/sign
 func (c *BaoClient) SignData(vaultName, keyAddress string, data []byte) ([]byte, error) {
 	// Bao Ethereum plugin endpoint
-	url := fmt.Sprintf("%s/ethereum/key-managers/%s/sign", c.address, vaultName)
+	fmt.Println("namespace", c.namespace)
+	fmt.Println("mountPath", c.mountPath)
+	fmt.Println("vaultName", vaultName)
+	fmt.Println("keyAddress", keyAddress)
+	var url string = ""
+	if c.namespace == "" {
+		url = fmt.Sprintf("%s/v1/%s/key-managers/%s/sign", c.address, c.mountPath, vaultName)
+	} else {
+		url = fmt.Sprintf("%s/v1/%s/%s/key-managers/%s/sign", c.address, c.namespace, c.mountPath, vaultName)
+	}
 
 	// Hash the data if it's not already 32 bytes (Keccak256)
 	var hashToSign []byte
@@ -123,13 +140,13 @@ type BaoSignResponse struct {
 
 // SignWithBao signs a message using Bao Ethereum plugin
 // configAddr is the Bao server address
-func SignWithBao(k *Record, msg []byte, configAddr string) (sig []byte, pub cryptotypes.PubKey, err error) {
+func SignWithBao(k *Record, msg []byte, configAddr, namespace, mountPath string) (sig []byte, pub cryptotypes.PubKey, err error) {
 	baoInfo := k.GetBao()
 	if baoInfo == nil {
 		return nil, nil, errors.New("not an Bao record")
 	}
 
-	client, err := NewBaoClient(configAddr)
+	client, err := NewBaoClient(configAddr, namespace, mountPath)
 	if err != nil {
 		return nil, nil, errors.Wrap(err, "failed to create Bao client")
 	}
