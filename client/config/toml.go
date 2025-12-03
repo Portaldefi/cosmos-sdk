@@ -32,6 +32,10 @@ broadcast-mode = "{{ .BroadcastMode }}"
 
 # Bao server address
 bao-addr = "{{ .BaoAddr }}"
+# Bao namespace
+bao-namespace = "{{ .BaoNamespace }}"
+# Bao mount path
+bao-mount-path = "{{ .BaoMountPath }}"
 `
 
 // writeConfigToFile parses defaultConfigTemplate, renders config using the template and writes it to

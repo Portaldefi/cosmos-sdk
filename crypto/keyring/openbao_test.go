@@ -18,8 +18,16 @@ func TestBaoBackend(t *testing.T) {
 	}
 
 	t.Run("NewBaoClient", func(t *testing.T) {
-		// Pass empty string to use environment variables / defaults
-		client, err := keyring.NewBaoClient("")
+		// Get address from environment or use test value
+		addr := os.Getenv("BAO_ADDR")
+		if addr == "" {
+			addr = os.Getenv("VAULT_ADDR")
+		}
+		if addr == "" {
+			addr = "http://localhost:8200" // test default
+		}
+		// Pass address, empty namespace, and test mount path
+		client, err := keyring.NewBaoClient(addr, "", "test-mount")
 		require.NoError(t, err)
 		require.NotNil(t, client)
 	})
